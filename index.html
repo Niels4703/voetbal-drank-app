@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Voetbalavond — drankbeurt</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <p class="eyebrow">Voetbalvriendengroep</p>
+      <h1>Wie voetbalt er mee?</h1>
+      <p class="intro">Zet jezelf aan. De app kiest eerlijk wie drinken meeneemt.</p>
+    </header>
+
+    <div id="setup-warning" class="notice hidden"></div>
+    <div id="connection-status" class="status">Verbinden…</div>
+
+    <section class="card">
+      <div class="section-heading">
+        <div>
+          <h2>Deze voetbalavond</h2>
+          <p id="round-date" class="muted"></p>
+        </div>
+        <span id="attendee-count" class="pill">0 deelnemers</span>
+      </div>
+      <div id="players" class="players"></div>
+      <p id="empty-players" class="empty hidden">Er zijn nog geen spelers toegevoegd.</p>
+      <button id="choose-button" class="button primary" type="button">Wijs drankverantwoordelijke aan</button>
+      <div id="assignment" class="assignment hidden"></div>
+    </section>
+
+    <section class="card admin-card">
+      <h2>Spelers beheren</h2>
+      <form id="player-form" class="add-form">
+        <input id="player-name" required maxlength="40" placeholder="Naam van speler" />
+        <button class="button" type="submit">Toevoegen</button>
+      </form>
+      <p class="muted small">Iedereen met de link kan de aanmeldingen aanpassen. Dat past bij een vriendengroep zonder accounts.</p>
+    </section>
+
+    <section class="card">
+      <h2>Drankhistorie</h2>
+      <div id="history" class="history"></div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
