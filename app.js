@@ -10,9 +10,6 @@ let attendance = new Set();
 let currentAssignment = null;
 let nextMatchDate = null;
 let currentGroupSettings = null;
-let selfAttendanceSelect = null;
-let selfAttendanceToggle = null;
-let selfAttendanceStatus = null;
 
 const bannerText = $('#banner-text');
 const bannerPerson = $('#banner-person');
@@ -62,35 +59,6 @@ async function start() {
 }
 
 function bindEvents() {
-  const assignmentCard = $('.assignment-card');
-  if (assignmentCard && !document.querySelector('.self-attendance-card')) {
-    const widget = document.createElement('section');
-    widget.className = 'self-attendance-card';
-    widget.innerHTML = `
-      <h3>Ben je erbij?</h3>
-      <p>Kies je naam en zet het schuifje aan of uit.</p>
-      <div class="self-attendance-picker">
-        <select class="self-attendance-name" aria-label="Kies je naam">
-          <option value="">Kies je naam</option>
-        </select>
-        <button type="button" class="self-attendance-toggle" aria-label="Aanwezigheid aanpassen" aria-checked="false" disabled></button>
-      </div>
-      <div class="self-attendance-status">Kies je naam en zet het schuifje aan of uit.</div>
-    `;
-    assignmentCard.insertAdjacentElement('afterend', widget);
-    selfAttendanceSelect = widget.querySelector('.self-attendance-name');
-    selfAttendanceToggle = widget.querySelector('.self-attendance-toggle');
-    selfAttendanceStatus = widget.querySelector('.self-attendance-status');
-
-    selfAttendanceSelect.addEventListener('change', renderSelfAttendanceState);
-    selfAttendanceToggle.addEventListener('click', async () => {
-      const playerId = selfAttendanceSelect.value;
-      if (!playerId) return;
-      await toggleAttendance(playerId, !attendance.has(playerId));
-      renderSelfAttendanceState();
-    });
-  }
-
   $('#save-date-button').addEventListener('click', async () => {
     if (!nextMatchDateInput.value) return;
     await saveMatchDate(nextMatchDateInput.value);
@@ -124,49 +92,6 @@ function bindEvents() {
     matchDayScreen.classList.add('hide');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
-}
-
-function renderSelfAttendanceOptions() {
-  if (!selfAttendanceSelect) return;
-
-  const currentValue = selfAttendanceSelect.value;
-  const fallbackId = players.find((player) => player.name === 'Ewout')?.id || players[0]?.id || '';
-
-  selfAttendanceSelect.innerHTML = '<option value="">Kies je naam</option>' + players
-    .map((player) => `<option value="${player.id}">${escapeHtml(player.name)}</option>`)
-    .join('');
-
-  const nextValue = players.some((player) => player.id === currentValue)
-    ? currentValue
-    : fallbackId;
-
-  selfAttendanceSelect.value = nextValue;
-  renderSelfAttendanceState();
-}
-
-function renderSelfAttendanceState() {
-  if (!selfAttendanceSelect || !selfAttendanceToggle || !selfAttendanceStatus) return;
-
-  const selectedId = selfAttendanceSelect.value;
-  const isPresent = Boolean(selectedId && attendance.has(selectedId));
-
-  selfAttendanceToggle.disabled = !selectedId;
-  selfAttendanceToggle.classList.toggle('is-on', isPresent);
-  selfAttendanceToggle.setAttribute('aria-checked', String(isPresent));
-
-  if (!selectedId) {
-    selfAttendanceStatus.textContent = 'Kies je naam en zet het schuifje aan of uit.';
-    selfAttendanceStatus.classList.remove('is-positive');
-    return;
-  }
-
-  if (isPresent) {
-    selfAttendanceStatus.textContent = 'Je bent aangemeld voor deze wedstrijd ✓';
-    selfAttendanceStatus.classList.add('is-positive');
-  } else {
-    selfAttendanceStatus.textContent = 'Je bent afgemeld voor deze wedstrijd';
-    selfAttendanceStatus.classList.remove('is-positive');
-  }
 }
 
 async function loadSettings() {
@@ -224,7 +149,6 @@ async function loadData() {
   attendance = new Set((attendanceResult.data || []).map((row) => row.player_id));
   currentAssignment = (attendanceResult.data || []).find((row) => row.assigned_player_id)?.assigned_player_id || null;
 
-  renderSelfAttendanceOptions();
   renderOverview();
   renderRanking();
   renderMatchPlayers();
