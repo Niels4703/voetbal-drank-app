@@ -1,0 +1,29 @@
+name: Match Day Scheduler
+
+on:
+  schedule:
+    - cron: "0 15 * * 2"   # dinsdag 17:00 Europe/Amsterdam
+    - cron: "0 19 * * 2"   # dinsdag 21:00 Europe/Amsterdam
+  workflow_dispatch:
+
+jobs:
+  run-scheduler:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call Supabase scheduler
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          curl -X POST "$SUPABASE_URL/rest/v1/rpc/assign_drink_person" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"p_group_id":"vriendengroep","p_round_date":"'"$(date -u +%Y-%m-%d)"'"}'
+
+          curl -X POST "$SUPABASE_URL/rest/v1/rpc/close_match_round" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"p_group_id":"vriendengroep","p_round_date":"'"$(date -u +%Y-%m-%d)"'"}'
