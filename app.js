@@ -49,7 +49,8 @@ if (!db) {
   bannerPerson.textContent = 'Setup';
   selectedName.textContent = 'Configuratie nodig';
   selectedRatio.textContent = 'Vul config.js in';
-  return;
+} else {
+  start();
 }
 
 start();
