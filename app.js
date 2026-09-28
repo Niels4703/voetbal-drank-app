@@ -1,9 +1,4 @@
-const configured = !!(
-  window.SUPABASE_URL &&
-  window.SUPABASE_ANON_KEY &&
-  !window.SUPABASE_URL.includes('YOUR-PROJECT') &&
-  !window.SUPABASE_ANON_KEY.includes('YOUR_SUPABASE')
-);
+const configured = Boolean(window.SUPABASE_URL && window.SUPABASE_ANON_KEY);
 
 const db = configured ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null;
 const groupId = window.FOOTBALL_GROUP_ID || 'vriendengroep';
